@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -27,8 +26,8 @@ class User
     #[ORM\Column(length: 15, nullable: true)]
     private ?string $sex = null;
 
-    #[ORM\Column(length: 30, nullable: true)]
-    private ?string $birthday = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $birthday = null;
 
     #[ORM\Column(length: 30, nullable: true)]
     private ?string $phone = null;
@@ -104,12 +103,12 @@ class User
         return $this;
     }
 
-    public function getBirthday(): ?string
+    public function getBirthday(): ?\DateTimeInterface
     {
         return $this->birthday;
     }
 
-    public function setBirthday(?string $birthday): static
+    public function setBirthday(?\DateTimeInterface $birthday): self
     {
         $this->birthday = $birthday;
 
