@@ -19,11 +19,6 @@ docker-compose up -d
 docker exec -it app bash
 ```
 
-3) Открыть bash контейнера php.
-```
-docker exec -it app bash
-```
-
 4) Установите зависимости Composer
 ```
 composer install
