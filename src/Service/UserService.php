@@ -2,18 +2,16 @@
 
 namespace App\Service;
 
-use App\DTO\UserRequest;
+use App\Request\UserRequest;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserService
 {
 
-    public function __construct(private readonly UserRepository $userRepository, private readonly EntityManagerInterface $em, private readonly ValidatorInterface $validator)
+    public function __construct(private readonly UserRepository $userRepository, private readonly EntityManagerInterface $em)
     {
     }
 
@@ -27,29 +25,23 @@ class UserService
         return $this->userRepository->find($id);
     }
 
-    public function createUser(Request $request): Response
+    public function createUser(UserRequest $userRequest): Response
     {
-        $json     = $request->getContent();
-        $dto_user = new UserRequest(json_decode($json));
-
-        if ($this->userRepository->duplicateEmail($dto_user->getEmail())) {
+        if ($this->userRepository->duplicateEmail($userRequest->getEmail())) {
             return new Response("Email duplicate", 400);
         }
 
-        $errors = $this->validator->validate($dto_user);
-
-        if (count($errors) > 0) {
-            $errorsString = (string) $errors;
-            return new Response($errorsString, 400);
-        }
+        $userRequest->validate();
 
         $user = (new User())
-            ->setEmail($dto_user->getEmail())
-            ->setName($dto_user->getName())
-            ->setAge($dto_user->getAge())
-            ->setSex($dto_user->getSex())
-            ->setBirthday($dto_user->getBirthday())
-            ->setPhone($dto_user->getPhone());
+            ->setEmail($userRequest->getEmail())
+            ->setName($userRequest->getName())
+            ->setAge($userRequest->getAge())
+            ->setSex($userRequest->getSex())
+            ->setBirthday($userRequest->getBirthday())
+            ->setPhone($userRequest->getPhone())
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setUpdatedAt(new \DateTimeImmutable());
 
         $this->em->persist($user);
         $this->em->flush();
@@ -57,30 +49,20 @@ class UserService
         return new Response("User created successfully");
     }
 
-    public function updateUser(int $id, Request $request): Response
+    public function updateUser(int $id, UserRequest $userRequest): Response
     {
-        $user     = $this->userRepository->getUserById($id);
-        $json     = $request->getContent();
-        $dto_user = new UserRequest(json_decode($json));
+        $userRequest->validate();
 
-        if ($this->userRepository->duplicateEmail($dto_user->getEmail())) {
-            return new Response("Email duplicate", 400);
-        }
-
-        $errors = $this->validator->validate($dto_user);
-
-        if (count($errors) > 0) {
-            $errorsString = (string) $errors;
-            return new Response($errorsString, 400);
-        }
+        $user = $this->userRepository->getUserById($id);
 
         $user
-            ->setEmail($dto_user->getEmail())
-            ->setName($dto_user->getName())
-            ->setAge($dto_user->getAge())
-            ->setSex($dto_user->getSex())
-            ->setBirthday($dto_user->getBirthday())
-            ->setPhone($dto_user->getPhone());
+            ->setEmail($userRequest->getEmail())
+            ->setName($userRequest->getName())
+            ->setAge($userRequest->getAge())
+            ->setSex($userRequest->getSex())
+            ->setBirthday($userRequest->getBirthday())
+            ->setPhone($userRequest->getPhone())
+            ->setUpdatedAt(new \DateTimeImmutable());
 
         $this->em->flush();
 

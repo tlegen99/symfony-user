@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Request\UserRequest;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,15 +28,15 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/v1/user', name: 'create_user', methods: ['POST'])]
-    public function createUser(Request $request): Response
+    public function createUser(UserRequest $userRequest): Response
     {
-        return $this->json($this->userService->createUser($request));
+        return $this->json($this->userService->createUser($userRequest));
     }
 
     #[Route('/api/v1/user/{id}', name: 'update_user', methods: ['PUT'])]
-    public function updateUser(int $id, Request $request): Response
+    public function updateUser(int $id, UserRequest $userRequest): Response
     {
-        return $this->json($this->userService->updateUser($id, $request));
+        return $this->json($this->userService->updateUser($id, $userRequest));
     }
 
     #[Route('/api/v1/user/{id}', name: 'delete_user', methods: ['DELETE'])]

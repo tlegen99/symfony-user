@@ -26,8 +26,8 @@ class User
     #[ORM\Column(length: 15, nullable: true)]
     private ?string $sex = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $birthday = null;
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $birthday = null;
 
     #[ORM\Column(length: 30, nullable: true)]
     private ?string $phone = null;
@@ -37,18 +37,6 @@ class User
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeInterface $updated_at;
-
-    #[ORM\PrePersist]
-    public function setCreatedAtValue(): void
-    {
-        $this->created_at = new \DateTimeImmutable();
-    }
-
-    #[ORM\PreUpdate]
-    public function setUpdatedAtValue(): void
-    {
-        $this->updated_at = new \DateTimeImmutable();
-    }
 
     public function getId(): ?int
     {
@@ -103,12 +91,12 @@ class User
         return $this;
     }
 
-    public function getBirthday(): ?\DateTimeInterface
+    public function getBirthday(): ?string
     {
         return $this->birthday;
     }
 
-    public function setBirthday(?\DateTimeInterface $birthday): self
+    public function setBirthday(?string $birthday): static
     {
         $this->birthday = $birthday;
 

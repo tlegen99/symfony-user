@@ -1,43 +1,34 @@
 <?php
 
-namespace App\DTO;
+namespace App\Request;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class UserRequest
+class UserRequest extends BaseRequest
 {
     #[Assert\NotBlank]
     #[Assert\Email(
         message: 'The email {{ value }} is not a valid email.',
     )]
-    private string $email;
+    protected string $email;
 
     #[Assert\NotBlank]
     #[Assert\Length(min: 3)]
-    private string $name;
+    protected string $name;
 
     #[Assert\NotBlank]
     #[Assert\GreaterThanOrEqual(5)]
-    private int $age;
+    protected int $age;
 
     #[Assert\NotBlank]
-    private string $sex;
+    #[Assert\Range(min: 1, max: 2)]
+    protected int $sex;
 
     #[Assert\NotBlank]
-    private \DateTimeInterface $birthday;
+    protected string $birthday;
 
     #[Assert\NotBlank]
-    private string $phone;
-
-    public function __construct(object $data)
-    {
-        $this->email = trim($data->email);
-        $this->name = trim($data->name);
-        $this->age = trim($data->age);
-        $this->sex = trim($data->sex);
-        $this->birthday = new \DateTimeImmutable(trim($data->birthday));
-        $this->phone = trim($data->phone);
-    }
+    protected string $phone;
 
     public function getEmail(): string
     {
@@ -46,7 +37,7 @@ class UserRequest
 
     public function getName(): string
     {
-        return $this->name;
+        return htmlspecialchars($this->name);
     }
 
     public function getAge(): int
@@ -54,14 +45,23 @@ class UserRequest
         return $this->age;
     }
 
-    public function getSex(): string
+    private static function getTwoSex(): array
     {
-        return $this->sex;
+        return [
+            1 => 'Мужской',
+            2 => 'Женский',
+        ];
     }
 
-    public function getBirthday(): \DateTimeInterface
+    public function getSex(): string
     {
-        return $this->birthday;
+        return static::getTwoSex()[$this->sex];
+    }
+
+    public function getBirthday(): string
+    {
+        $birthday = new \DateTimeImmutable($this->birthday);
+        return $birthday->format("j F");
     }
 
     public function getPhone(): string
