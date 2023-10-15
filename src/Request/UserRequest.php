@@ -2,6 +2,7 @@
 
 namespace App\Request;
 
+use App\Helpers\HelperFunctions;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class UserRequest extends BaseRequest
@@ -61,7 +62,7 @@ class UserRequest extends BaseRequest
     public function getBirthday(): string
     {
         $birthday = new \DateTimeImmutable($this->birthday);
-        return $birthday->format("j F");
+        return HelperFunctions::rus_date($birthday);
     }
 
     public function getPhone(): string
