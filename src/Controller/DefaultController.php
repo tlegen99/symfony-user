@@ -13,6 +13,7 @@ class DefaultController extends AbstractController
 
     public function __construct(UserRepository $user_repository)
     {
+
         $this->user_repository = $user_repository;
     }
 
